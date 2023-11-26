@@ -1,20 +1,21 @@
-INTRODUCTION :
+# INTRODUCTION :
 
 Introducing the "Student Result Portal developed with SAP software" is a comprehensive platform showcasing student's results alongside personal details such as name , class , DOB , gender, phone number and email. Streamlining access to vital academic information for an enhanced user experience. #SAP #StudentPortal #AcademicResults
 
 
-CONCEPTS USED :
+# CONCEPTS USED :
 
 1.  Data Dictionary
 2.  Module Pool Programming
 3.  Smart Forms
 
 
-REQUIREMENTS :
+# REQUIREMENTS :
+
 * Need an authorized login details for using SAP software.
 
 
-HOW TO RUN ?
+# HOW TO RUN ?
 
 
 -> Login to SAP software with authorized login details.
@@ -30,7 +31,7 @@ HOW TO RUN ?
 
 
 
-SCREENSHOTS :
+# SCREENSHOTS :
 
 
 Screen_1
