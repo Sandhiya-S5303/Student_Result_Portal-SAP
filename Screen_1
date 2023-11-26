@@ -1,0 +1,209 @@
+*&---------------------------------------------------------------------*
+*& Report  ZSTUDENT_RESULT_PORTAL
+*&---------------------------------------------------------------------*
+*& Main page of Student Result Portal
+*&---------------------------------------------------------------------*
+
+REPORT ZSTUDENT_RESULT_PORTAL.
+
+TABLES: USERS, STUDENT_DETAILS, STUDENT_MARKS.
+
+DATA: OK_CODE LIKE SY-UCOMM,
+      USERNAME TYPE STRING,
+      PASSWORD TYPE STRING,
+      STUDENT_ID TYPE STRING,
+      STUDENT_NAME TYPE STRING,
+      DOB TYPE DATS,
+      RE_PASSWORD TYPE STRING.
+
+MODULE STATUS_0100 OUTPUT.
+
+  SET PF-STATUS 'MAIN_SCREEN'.
+  SET TITLEBAR 'MAIN_SCREEN_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'HEADER'.
+        SCREEN-ACTIVE = 0.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 1.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_0100 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'SIGN_IN'.
+      CALL SCREEN 1001.
+
+    WHEN 'SIGN_UP'.
+      CALL SCREEN 1002.
+
+    WHEN 'EXIT'.
+      LEAVE TO SCREEN 0.
+
+  ENDCASE.
+
+ENDMODULE.
+
+MODULE STATUS_1001 OUTPUT.
+
+  SET PF-STATUS 'SIGN_IN_SCREEN'.
+  SET TITLEBAR 'SIGN_IN_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'SIGN_IN_AREA'.
+        SCREEN-ACTIVE = 1.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 0.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_1001 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'BACK'.
+      SET SCREEN 0.
+
+    WHEN 'SIGN_IN_SUBMIT'.
+      SELECT SINGLE * FROM USERS WHERE USERNAME = USERNAME AND PASSWORD = PASSWORD.
+      IF SY-SUBRC = 0.
+        SET PARAMETER ID 'USR' FIELD USERNAME.
+        CALL SCREEN 2000.
+      ELSE.
+        MESSAGE 'Invalid username or password' TYPE 'E'.
+      ENDIF.
+  ENDCASE.
+
+ENDMODULE.
+
+MODULE STATUS_1002 OUTPUT.
+
+  SET PF-STATUS 'SIGN_UP_SCREEN'.
+  SET TITLEBAR 'SIGN_UP_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'SIGN_UP_AREA'.
+        SCREEN-ACTIVE = 1.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 0.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_1002 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'BACK'.
+      SET SCREEN 0.
+
+    WHEN 'SIGN_UP_SUBMIT'.
+      IF PASSWORD = RE_PASSWORD.
+        SELECT SINGLE * FROM USERS WHERE USERNAME = USERNAME.
+        IF SY-SUBRC <> 0.
+          INSERT INTO USERS (USERNAME, PASSWORD) VALUES (USERNAME, PASSWORD).
+          COMMIT WORK.
+          SET PARAMETER ID 'USR' FIELD USERNAME.
+          CALL SCREEN 2000. 
+
+        ELSE.
+          MESSAGE 'Username already exists' TYPE 'E'.
+        ENDIF.
+      ELSE.
+        MESSAGE 'Passwords do not match' TYPE 'E'.
+      ENDIF.
+  ENDCASE.
+
+ENDMODULE.
+
+MODULE STATUS_2000 OUTPUT.
+
+  SET PF-STATUS 'MAIN_SCREEN'.
+  SET TITLEBAR 'MAIN_SCREEN_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'HEADER'.
+        SCREEN-ACTIVE = 0.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 1.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_2000 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'DISPLAY_DETAILS'.
+      CALL SCREEN 3000. 
+
+    WHEN 'SIGN_OUT'.
+      SET PARAMETER ID 'USR' FIELD SPACE. 
+      SET SCREEN 0.
+  ENDCASE.
+
+ENDMODULE.
+
+MODULE STATUS_3000 OUTPUT.
+
+  SET PF-STATUS 'STUDENT_DETAILS_SCREEN'.
+  SET TITLEBAR 'STUDENT_DETAILS_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'STUDENT_DETAILS_AREA'.
+        SCREEN-ACTIVE = 1.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 0.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_3000 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'BACK_TO_MAIN'.
+      SET SCREEN 2000.
+
+    WHEN 'PRINT_STUDENT_DETAILS'.
+      PERFORM Print_Student_Details.
+
+    WHEN 'EXIT_STUDENT_DETAILS'.
+      SET SCREEN 0.
+
+  ENDCASE.
+
+ENDMODULE.
+
+FORM Print_Student_Details.
+  DATA(lv_output) TYPE string.
+  DATA(lv_student_id) TYPE string VALUE '1001'.
+  DATA(lv_student_name) TYPE string VALUE 'SANDHIYA'.
+  DATA(lv_student_dob) TYPE dats VALUE '05.03.2003'.
+
+  CONCATENATE 'Student ID: ' lv_student_id
+              'Student Name: ' lv_student_name
+              'Date of Birth: ' lv_student_dob
+              INTO lv_output
+              SEPARATED BY space.
+  MESSAGE lv_output TYPE 'I'.
+ENDFORM.

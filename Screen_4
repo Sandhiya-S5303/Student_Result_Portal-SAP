@@ -1,0 +1,91 @@
+*&---------------------------------------------------------------------*
+*& Report  ZSTUDENT_RESULT_PORTAL
+*&---------------------------------------------------------------------*
+*& Student Details and Marks Display Page
+*&---------------------------------------------------------------------*
+
+REPORT ZSTUDENT_RESULT_PORTAL.
+
+TABLES: USERS, STUDENT_MARKS.
+
+DATA: OK_CODE LIKE SY-UCOMM,
+      STUDENT_ID TYPE STRING,
+      STUDENT_NAME TYPE STRING,
+      STUDENT_DOB TYPE DATS,
+      MARKS_SUBSCREEN TYPE SUBSCREEN,
+      PRINT_BUTTON TYPE SVAL,
+      SIGN_OUT_BUTTON TYPE SVAL.
+
+MODULE STATUS_2000 OUTPUT.
+
+  SET PF-STATUS 'MAIN_SCREEN'.
+  SET TITLEBAR 'MAIN_SCREEN_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'HEADER'.
+        SCREEN-ACTIVE = 0.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 1.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_2000 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'DISPLAY_DETAILS'.
+      STUDENT_ID = '1001';
+      STUDENT_NAME = 'SANDHIYA';
+      STUDENT_DOB = '05.03.2003';
+
+      SELECT SINGLE * FROM STUDENT_MARKS WHERE STUDENT_ID = STUDENT_ID.
+      IF SY-SUBRC = 0.
+        MARKS_SUBSCREEN = 'Subject1: 80, Subject2: 90, Subject3: 80 , Subject4: 92, Subject5: 85, Subject6: 85, Total Marks: 512'.
+      ENDIF.
+
+      CALL SUBSCREEN MARKS_SUBSCREEN.
+
+    WHEN 'PRINT'.
+      MESSAGE 'Printing not implemented' TYPE 'I'.
+
+    WHEN 'SIGN_OUT'.
+      SET SCREEN 0.
+  ENDCASE.
+
+ENDMODULE.
+
+MODULE SUBSCREEN_DISPLAY OUTPUT.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'PERSONAL_DETAILS_SUBSCREEN'.
+        SCREEN-ACTIVE = 1.
+        SCREEN-INPUT = 0. 
+    ENDCASE.
+  ENDLOOP.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'MARKS_DETAILS_SUBSCREEN'.
+        SCREEN-ACTIVE = 1.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE SUBSCREEN_LOGIC INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'PERSONAL_DETAILS_SUBSCREEN'.
+      MESSAGE 'Handling input in Personal Details Subscreen' TYPE 'I'.
+    WHEN 'MARKS_DETAILS_SUBSCREEN'.
+      MESSAGE 'Handling input in Marks Details Subscreen' TYPE 'I'.
+  ENDCASE.
+
+ENDMODULE.

@@ -1,0 +1,105 @@
+*&---------------------------------------------------------------------*
+*& Report  ZSTUDENT_RESULT_PORTAL
+*&---------------------------------------------------------------------*
+*& Sign-In Page of Student Result Portal
+*&---------------------------------------------------------------------*
+
+REPORT ZSTUDENT_RESULT_PORTAL.
+
+TABLES: USERS.
+
+DATA: OK_CODE LIKE SY-UCOMM,
+      STUDENT_ID TYPE STRING,
+      PASSWORD TYPE STRING.
+
+
+MODULE STATUS_1001 OUTPUT.
+
+  SET PF-STATUS 'SIGN_IN_SCREEN'.
+  SET TITLEBAR 'SIGN_IN_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'SIGN_IN_AREA'.
+        SCREEN-ACTIVE = 1.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 0.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_1001 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'BACK'.
+      SET SCREEN 0.
+    WHEN 'EXIT'.
+      LEAVE TO SCREEN 0.
+    WHEN 'SUBMIT'.
+      PERFORM Validate_SignIn.
+  ENDCASE.
+
+ENDMODULE.
+
+
+MODULE STATUS_2000 OUTPUT.
+
+  SET PF-STATUS 'MAIN_SCREEN'.
+  SET TITLEBAR 'MAIN_SCREEN_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'HEADER'.
+        SCREEN-ACTIVE = 0.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 1.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+
+MODULE USER_COMMAND_2000 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'SIGN_IN'.
+      PERFORM Process_SignIn.
+    WHEN 'SIGN_UP'.
+      PERFORM Process_SignUp.
+    WHEN 'EXIT'.
+      LEAVE TO SCREEN 0.
+  ENDCASE.
+
+ENDMODULE.
+
+
+FORM Process_SignIn.
+  CALL SCREEN 1001.
+ENDFORM.
+
+FORM Process_SignUp.
+  CALL SCREEN 1002.
+ENDFORM.
+
+
+FORM Validate_SignIn.
+  DATA: lv_user_valid TYPE ABAP_BOOL.
+  
+  IF STUDENT_ID = '1001' AND PASSWORD = 'Sandy@123'.
+    lv_user_valid = ABAP_TRUE.
+
+  ELSE.
+    lv_user_valid = ABAP_FALSE.
+
+  ENDIF.
+  IF lv_user_valid = ABAP_TRUE.
+    CALL SCREEN 2000.
+  ELSE.
+    MESSAGE 'Invalid Student ID or Password' TYPE 'E'.
+  ENDIF.
+ENDFORM.

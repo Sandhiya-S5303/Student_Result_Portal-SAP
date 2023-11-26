@@ -1,0 +1,115 @@
+*&---------------------------------------------------------------------*
+*& Report  ZSTUDENT_RESULT_PORTAL
+*&---------------------------------------------------------------------*
+*& Sign-Up Page of Student Result Portal
+*&---------------------------------------------------------------------*
+
+REPORT ZSTUDENT_RESULT_PORTAL.
+
+TABLES: USERS.
+
+DATA: OK_CODE LIKE SY-UCOMM,
+      STUDENT_ID TYPE STRING,
+      PASSWORD TYPE STRING,
+      RE_PASSWORD TYPE STRING.
+
+MODULE STATUS_1002 OUTPUT.
+
+  SET PF-STATUS 'SIGN_UP_SCREEN'.
+  SET TITLEBAR 'SIGN_UP_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'SIGN_UP_AREA'.
+        SCREEN-ACTIVE = 1.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 0.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_1002 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'BACK'.
+      SET SCREEN 0.
+
+    WHEN 'EXIT'.
+      LEAVE TO SCREEN 0.
+
+    WHEN 'SUBMIT'.
+      IF STUDENT_ID IS NOT INITIAL AND
+         PASSWORD IS NOT INITIAL AND
+         RE_PASSWORD IS NOT INITIAL.
+
+        IF PASSWORD = RE_PASSWORD.
+          SELECT SINGLE * FROM USERS WHERE STUDENT_ID = STUDENT_ID.
+
+          IF SY-SUBRC <> 0.
+            INSERT INTO USERS (STUDENT_ID, PASSWORD) VALUES (STUDENT_ID, PASSWORD).
+            COMMIT WORK.
+            CALL SCREEN 2000.
+
+          ELSE.
+            MESSAGE 'Student ID already exists' TYPE 'E'.
+          ENDIF.
+
+        ELSE.
+          MESSAGE 'Passwords do not match' TYPE 'E'.
+
+        ENDIF.
+
+      ELSE.
+        MESSAGE 'Please fill in all fields' TYPE 'E'.
+
+      ENDIF.
+
+  ENDCASE.
+
+ENDMODULE.
+
+MODULE STATUS_2000 OUTPUT.
+
+  SET PF-STATUS 'MAIN_SCREEN'.
+  SET TITLEBAR 'MAIN_SCREEN_TITLE'.
+
+  LOOP AT SCREEN.
+    CASE SCREEN-GROUP1.
+      WHEN 'HEADER'.
+        SCREEN-ACTIVE = 0.
+      WHEN 'MAIN_AREA'.
+        SCREEN-ACTIVE = 1.
+    ENDCASE.
+  ENDLOOP.
+
+ENDMODULE.
+
+MODULE USER_COMMAND_2000 INPUT.
+
+  OK_CODE = SY-UCOMM.
+
+  CASE OK_CODE.
+    WHEN 'SIGN_IN'.
+      PERFORM Process_SignIn.
+
+    WHEN 'SIGN_UP'.
+      PERFORM Process_SignUp.
+
+    WHEN 'EXIT'.
+      LEAVE TO SCREEN 0.
+
+  ENDCASE.
+
+ENDMODULE.
+
+FORM Process_SignIn.
+  CALL SCREEN 1001.
+ENDFORM.
+
+FORM Process_SignUp.
+  CALL SCREEN 1003.
+ENDFORM.
+
