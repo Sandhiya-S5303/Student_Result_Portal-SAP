@@ -15,12 +15,23 @@ REQUIREMENTS :
 
 
 HOW TO RUN ?
+
+
 -> Login to SAP software with authorized login details.
+
+
 -> enter the "Transaction code - SE80" it takes to ABAP workbench where you can write your code.
+
+
 -> After written the code activate the code , check and execute.
+
+
 -> Set a customize transaction code for your project ( eg: ZRESULT ).
 
+
+
 SCREENSHOTS :
+
 
 Screen_1
 
