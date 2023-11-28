@@ -33,6 +33,8 @@ Introducing the "Student Result Portal developed with SAP software" is a compreh
 
 # SCREENSHOTS 
 
+### WEB PAGES
+
 
 Screen_1
 
@@ -58,12 +60,21 @@ Screen_3
 
 Screen_4
 
+*  Personal Details
+
 
 ![1001 student](https://github.com/Sandhiya-S5303/Student_Result_Portal-SAP/assets/110396890/a58073e8-1a32-49cc-b5e5-99968a8f75c1)
 
 
+
+*  Marks Details
+
+
 ![1001 marks](https://github.com/Sandhiya-S5303/Student_Result_Portal-SAP/assets/110396890/ab953058-ce00-4ad5-9a7c-dc82a43d0d89)
 
+
+
+### DATABASE
 
 
 
